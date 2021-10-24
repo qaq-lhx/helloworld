@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>All Bookings</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <table>
+        <% bookings.forEach( function(booking) { %>
+        
+            <tr>
+            	<td><%= booking.name %></td>
+              <td><%= booking.email %></td>
+            	<td><%= booking.number_of_tickets %></td>
+              <td><%= booking.team %></td>
+              <td><%= booking.superhero %></td>
+              <td><%= booking.message %></td>
+              <td><%= booking.pay_by_paypal %></td>
+              <td><%= booking.pay_credit_card %></td>  
+            </tr>
+        
+        <% }); %>
+     </table>
+  </body>
+</html> 

@@ -1,0 +1,217 @@
+<!-- https://bulma.io/documentation/form/general/#complete-form-example -->
+<!-- <script src="https://kit.fontawesome.com/f48c21cdaf.js" crossorigin="anonymous"></script> 导入icon -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <script src="https://kit.fontawesome.com/f48c21cdaf.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">
+                Hello World
+            </h1>
+            <p class="subtitle">
+                My first website with <strong>Bulma</strong>!
+            </p>
+            <div class="columns">
+                <!-- 将表单数据提交到目标主机的form目录下 -->
+                <form class="column is-one-third" action="/form" method="POST">
+                    <!-- 创建一个表单，一个占三分之一列空间， action将表单数据提交给链接 -->
+                    <!-- method设置提交数据方式，get直接把参数附在URL里面，post把参数放在请求报文中 -->
+                    <!-- input fields通过name属性识别元素，name在input中设置 -->
+
+                    <div class="field">
+                        <!-- field 容器保持表单元素间隔一致，一般包含label，control，help（可选） -->
+                        <label class="label">Name</label>
+                        <div class="control">
+                            <!-- 使用control对表单元素进行包装，只能对input，select，button，icon使用 -->
+                            <!--
+                                control的作用： 
+                                keep the spacing consistent
+                                combine form controls into a group
+                                combine form controls into a list
+                                append and prepend icons to a form control
+                            -->
+                            <input class="input" type="text" placeholder="Text input" name="name" required>
+                            <!-- 输入文本框，预置值text input, required设置该项目必填 -->
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Number of Tickets</label>
+                        <div class="control has-icons-left has-icons-right">
+                            <input class="input is-success" type="number" placeholder="choose the number" min="1"
+                                max="4" name="number_of_tickets">
+                            <!-- 只能接受数字，设置数字上下限 -->
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <span class="icon is-small is-right">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
+                        <p class="help is-success">This username is available</p>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <div class="control has-icons-left has-icons-right">
+                            <input class="input is-danger" type="email" placeholder="Email input" value="hello@" name="email">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <span class="icon is-small is-right">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </span>
+                        </div>
+                        <p class="help is-danger">This email is invalid</p>
+                    </div>
+
+                    <div class="field">
+                        <!-- 
+                                包含icon表单常见格式：
+                                <块 class=control icon位置>
+                                    <表单标签></>
+                                    <span class=icon 位置 is-small>
+                                        <i class=fas fa-哪个icon></i>
+                                    </span>
+                                    <span>
+                                        <i></i>
+                                    </span>
+                                </块>
+                             -->
+                        <p class="control has-icons-left has-icons-right">
+                            <!-- 需要使用icon的时候在control处需先声明icon位置 -->
+                            <input class="input" type="email" placeholder="Email">
+                            <!-- placeholder输入提示 -->
+                            <span class="icon is-small is-left">
+                                <!-- 声明icon类，icon位置和大小，如果文本框不够大，icon不能继续变大 -->
+                                <i class="fas fa-envelope"></i>
+                                <!-- 获取icon -->
+                            </span>
+                            <span class="icon is-small is-right">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </p>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Team</label>
+                        <div class="control">
+                            <div class="select">
+                                <select onchange="teamSelected(this.value)" name="team">
+                                    <!-- 当选择值改变的时候onchange中的方法会执行 -->
+                                    <option value="">Select your favourite team here.</option>
+                                    <option value="Avengers">Avengers</option>
+                                    <option value="JLA">Justice League</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Superhero</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="superhero" disabled name="superhero">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Message</label>
+                        <div class="control">
+                            <textarea class="textarea" placeholder="Textarea" rows="2" name="message"></textarea>
+                            <!-- rows/cols设置文本框的行数/列数,或height/width -->
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <label class="checkbox">
+                                <input type="checkbox">
+                                I agree to the <a href="#">terms and conditions</a>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <label class="radio">
+                                <input type="radio" name="payment" value="pay by credit card">
+                                Pay by Credit Card
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="payment" value="pay by paypal">
+                                Pay by Paypal
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">Submit</button>
+                            <!-- type 设置按钮的功能类型 -->
+                        </div>
+                        <div class="control">
+                            <button type="reset" class="button is-link is-light">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <script>
+        var avengers = ["Captain America", "Iron Man", "Thor", "Hulk", "Black Widow", "Hawkeye"];
+        var jla = ["Superman", "Batman", "Wonder Woman", "Flash", "Green Lantern", "Aquaman"];
+
+        function teamSelected(team) {
+            //alert(team);
+            //alert 设置提示弹窗
+
+            var superheroElem = document.getElementById("superhero");
+            superheroElem.options.length = 0;
+            //清除原有选项
+
+            if (team == "Avengers") {
+                //创建下拉选项
+                avengers.forEach(function (item) {
+                    var option = document.createElement("option");
+                    option.text = item;
+                    option.value = item;
+                    superheroElem.add(option);
+                });
+
+                superheroElem.disabled = false;
+                //启用下拉列表
+
+            } else if (team == "JLA") {
+
+                jla.forEach(function (item) {
+                    var option = document.createElement("option");
+                    option.text = item;
+                    option.value = item;
+                    superheroElem.add(option);
+                });
+
+                superheroElem.disabled = false;
+
+            } else {
+
+                superheroElem.disabled = true;
+            }
+        }
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,110 @@
+<!--paginate.ejs-->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+
+            <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+
+                <% bookings.forEach( function(booking) { %>
+                    <tr><td><%= booking.name %></td><td><%= booking.number_of_tickets %></td></tr>
+                <% }); %>
+
+            </table>
+
+            <nav class="pagination" role="navigation" aria-label="pagination">
+                <a class="pagination-previous" id="previousButton">Previous</a>
+                <a class="pagination-next" id="nextButton">Next page</a>
+                <ul class="pagination-list">
+                    <li>
+                        <a class="pagination-link" id="firstLink">1</a>
+                    </li>
+                    <li>
+                        <span class="pagination-ellipsis">&hellip;</span>
+                    </li>
+                    <li>
+                        <a class="pagination-link" id="previousLink">45</a>
+                    </li>
+                    <li>
+                        <a class="pagination-link is-current" id="currentLink">46</a>
+                    </li>
+                    <li>
+                        <a class="pagination-link" id="nextLink">47</a>
+                    </li>
+                    <li>
+                        <span class="pagination-ellipsis">&hellip;</span>
+                    </li>
+                    <li>
+                        <a class="pagination-link" id="lastLink">86</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+
+    
+
+    <script>
+        var previousButton = document.getElementById("previousButton");
+        var nextButton = document.getElementById("nextButton");
+        var currentLink = document.getElementById("currentLink");
+        var previousLink = document.getElementById("previousLink");
+        var nextLink = document.getElementById("nextLink");
+        var firstLink = document.getElementById("firstLink");
+        var lastLink = document.getElementById("lastLink");
+    
+        var numOfRecords = parseInt("<%= numOfRecords %>");
+    
+        const urlParams = new URLSearchParams(window.location.search);
+        //urlparams.limit 访问的是limit这个类，get获取limit的值
+        var limit = Math.max(parseInt(urlParams.get("limit")), 2) || 2;
+        var offset = Math.max(parseInt(urlParams.get("offset")), 0) || 0;
+    
+        function buildLinks() {
+    
+            var baseUrl = "/bookings/paginate?limit=" + limit + "&offset=";
+    
+            firstLink.href = baseUrl + 0;
+            previousButton.href = baseUrl + (offset - limit);
+            previousLink.href = baseUrl + (offset - limit);
+            currentLink.href = baseUrl + offset;
+            nextLink.href = baseUrl + (offset + limit);
+            nextButton.href = baseUrl + (offset + limit);
+            lastLink.href = baseUrl + (Math.ceil(numOfRecords / limit) - 1) * limit;
+    
+            var currentPageNumber = Math.floor(offset / limit) + 1;
+    
+            previousLink.innerHTML = currentPageNumber - 1;
+            currentLink.innerHTML = currentPageNumber;
+            nextLink.innerHTML = currentPageNumber + 1;
+            lastLink.innerHTML = Math.ceil(numOfRecords / limit);
+    
+            if (offset < limit) {
+                previousButton.setAttribute("disabled", true);
+                previousButton.href = "";
+                previousLink.style.display = "none";
+            }
+    
+            if (offset + limit >= numOfRecords) {
+                nextButton.setAttribute("disabled", true);
+                nextButton.href = "";
+                nextLink.style.display = "none";
+            }
+        }
+    
+        buildLinks();
+    
+    </script>
+
+</body>
+
+</html>
