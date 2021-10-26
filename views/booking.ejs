@@ -1,20 +1,52 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>
-            A Booking
-        </title>
-        <link rel='stylesheet' href='/stylesheets/style.css' />
-    </head>
-    <body>
-        <%= booking.name %>,
-            	<%= booking.number_of_tickets %>,
-                <%= booking.team %>,
+
+<head>
+    <title>
+        A Booking
+    </title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body>
+    <%= booking.name %>,
+        <%= booking.number_of_tickets %>,
+            <%= booking.team %>,
                 <%= booking.superhero %>,
-                <%= booking.email %>,               
-                <%= booking.payment %>
-                <form action="/bookings/delete/<%= booking.$loki %>" method="POST">
-                    <button type="submit">Delete</button>
-                </form>
-    </body>
+                    <%= booking.email %>,
+                        <%= booking.payment %>
+                            <button type="button" class="button is-danger"
+                                onclick="deleteBooking(booking.$loki)">Delete</button>
+                            <script>
+                                async function deleteBooking(id) {
+                                    //确认框，如果点ok则返回true，其他返回false
+                                    var r = confirm("Confirm Delete?");
+
+                                    if (r) {
+                                        //await只能在异步中使用，声明会等方法执行完之后再继续执行下去
+                                        var response = await fetch("/bookings/delete/" + id, {
+                                            method: "POST"
+                                        });
+                                        //如果ok值为true则表示该部分执行无误
+                                        if (response.ok) {
+                                            //获取报文中的文本内容，bookings页面ejs
+                                            //var html = await response.text();
+                                            //将内容输出到警告窗口
+                                            //alert(html);
+
+                                            alert("Booking deleted.");
+                                            //客户端重定向，服务器用redirect
+                                            location.assign("/bookings");
+                                        } else {
+                                            //如果执行有问题则读取expection信息
+                                            alert(response.status + ": " + response.statusText);
+                                        }
+
+                                    } else {
+                                        alert("cancelled");
+                                    }
+                                };
+                            </script>
+</body>
+
 </html>

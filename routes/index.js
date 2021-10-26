@@ -29,7 +29,7 @@ router.get('/', function(req, res, next) {
 //获得客户端发到form的post报文后，返回header和body
 //Echoing the From Inputs
 router.post('/form', function (req, res) {
-
+  req.body.ticket=PictureInPictureWindow(req.bodu.ticket)
   //解析数字，将数据存到指定数据库文件内
   db.getCollection("bookings").insert(req.body);
 
@@ -78,7 +78,15 @@ router.post('/bookings/delete/:id', function (req, res) {
  //删掉该数据
   db.getCollection("bookings").remove(result);
   
-  res.send("Booking deleted.");
+  // res.send("Booking deleted.");
+  //res.redirect("/bookings");
+  //Accept告诉服务器，客户端接受什么类型的响应，如文本，图片。。。Content-Type对应告诉服务器发来的是什么类型数据；indexOf返回查找值第一次出现位置
+  //确认服务器自己能否接受html响应
+  if (req.get('Accept').indexOf('html') === -1) {
+    return res.status(204).send();	    // for ajax request
+} else {
+    return res.redirect('/bookings');	// for normal HTML request
+}
    
 });
 
