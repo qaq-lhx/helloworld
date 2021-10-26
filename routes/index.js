@@ -5,41 +5,53 @@ var loki = require('lokijs');
 
 //创建数据库
 var db = new loki('data.json', {
-    autoload: true,
-    autoloadCallback: databaseInitialize,
-    autosave: true,
-    autosaveInterval: 4000
+  autoload: true,
+  autoloadCallback: databaseInitialize,
+  autosave: true,
+  autosaveInterval: 4000
 });
 
 // implement the autoloadback referenced in loki constructor
 //创建数据表
 function databaseInitialize() {
-    var bookings = db.getCollection("bookings");
-    if (bookings === null) {
-        bookings = db.addCollection("bookings");
-    }
+  var bookings = db.getCollection("bookings");
+  if (bookings === null) {
+    bookings = db.addCollection("bookings");
+  }
 }
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-/* Handle the Form */
-//获得客户端发到form的post报文后，返回header和body
-//Echoing the From Inputs
-router.post('/form', function (req, res) {
-  req.body.ticket=PictureInPictureWindow(req.bodu.ticket)
-  //解析数字，将数据存到指定数据库文件内
-  db.getCollection("bookings").insert(req.body);
+// /* Handle the Form */
+// //获得客户端发到form的post报文后，返回header和body
+// //Echoing the From Inputs
+// //router.post('/form', function (req, res) {
+//   router.post('/bookings', function (req, res) {
+//   req.body.number_of_tickets = parseInt(req.body.number_of_tickets);
+//   //解析数字，将数据存到指定数据库文件内
+//   db.getCollection("bookings").insert(req.body);
 
-  var response = {
-      header: req.headers,
-      body: req.body
-  };
+//   var response = {
+//     header: req.headers,
+//     body: req.body
+//   };
 
-  res.json(response);    
+//   res.json(response);
+// });
+
+/* Handle the Form submission with Restful Api */
+router.post('/bookings', function (req, res) {
+
+  req.body.numTickets = parseInt(req.body.numTickets);
+
+  let result = db.getCollection("bookings").insert(req.body);
+
+  res.status(201).json({ id: result.$loki });
 });
+
 
 /* Display all Bookings */
 //访问/bookings时展示数据
@@ -54,13 +66,13 @@ router.get('/bookings', function (req, res) {
 //:id 可以使该部分地址可变，通过读取id属性获取实际值
 router.get('/bookings/read/:id', function (req, res) {
 
-  console.log(req.params.id)
-//从数据库bookings中找一条$loki值为id的记录，$loki为记录的识别编号，存在该对象返回对象，不存在返回false
-//parseInt方法将其他类型转为int
+
+  //从数据库bookings中找一条$loki值为id的记录，$loki为记录的识别编号，存在该对象返回对象，不存在返回false
+  //parseInt方法将其他类型转为int
   let result = db.getCollection("bookings").findOne({ $loki: parseInt(req.params.id) });
 
   if (result)
-  //找到叫booking的页面视图，在客户端显示；数据库记录传给{}中变量booking,无法直接将result传到前端
+    //找到叫booking的页面视图，在客户端显示；数据库记录传给{}中变量booking,无法直接将result传到前端
     res.render('booking', { booking: result });
   else
     res.status(404).send('Unable to find the requested resource!');
@@ -68,26 +80,27 @@ router.get('/bookings/read/:id', function (req, res) {
 });
 
 // Delete a single Booking 
-router.post('/bookings/delete/:id', function (req, res) {
+//router.post('/bookings/delete/:id', function (req, res) {
+  router.delete('/bookings/:id', function(req, res) {
 
   // db.getCollection("bookings").findAndRemove({ $loki: parseInt(req.params.id) });
   //获取数据表中对应数据项
   let result = db.getCollection("bookings").findOne({ $loki: parseInt(req.params.id) });
-  
+
   if (!result) return res.status(404).send('Unable to find the requested resource!');
- //删掉该数据
+  //删掉该数据
   db.getCollection("bookings").remove(result);
-  
+
   // res.send("Booking deleted.");
   //res.redirect("/bookings");
   //Accept告诉服务器，客户端接受什么类型的响应，如文本，图片。。。Content-Type对应告诉服务器发来的是什么类型数据；indexOf返回查找值第一次出现位置
   //确认服务器自己能否接受html响应
   if (req.get('Accept').indexOf('html') === -1) {
     return res.status(204).send();	    // for ajax request
-} else {
+  } else {
     return res.redirect('/bookings');	// for normal HTML request
-}
-   
+  }
+
 });
 
 // Form for updating a single Booking 

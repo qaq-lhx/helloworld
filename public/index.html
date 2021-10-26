@@ -22,7 +22,8 @@
             </p>
             <div class="columns">
                 <!-- 将表单数据提交到目标主机的form目录下 -->
-                <form class="column is-one-third" action="/form" method="POST">
+                <!-- 表单提交时onsubmit方法会执行，return false取消默认表单提交方式 -->
+                <form class="column is-one-third" action="/bookings" method="POST" onsubmit="postData(this);return false">
                     <!-- 创建一个表单，一个占三分之一列空间， action将表单数据提交给链接 -->
                     <!-- method设置提交数据方式，get直接把参数附在URL里面，post把参数放在请求报文中 -->
                     <!-- input fields通过name属性识别元素，name在input中设置 -->
@@ -209,9 +210,38 @@
                 superheroElem.disabled = true;
             }
         }
-
-
     </script>
+
+    <script>
+        async function postData(elem) {
+    
+        //   var response = await fetch('https://httpbin.org/post', {
+        //     method: 'POST',
+        //     headers: {
+        //       'Content-Type': 'application/x-www-form-urlencoded',
+        //     },
+        //     body: "foo=bar&lorem=ipsum"
+        //   });
+
+        var response = await fetch(elem.action, {
+    method: elem.method,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams(new FormData(elem))
+  });
+    
+          //在客户端控制台展示
+          console.log(response);
+    
+          if (response.ok) {
+            var data = await response.json();
+            alert(JSON.stringify(data));
+          } else {
+            alert(response.status + " " + response.statusCode);
+          }
+        }
+      </script>
 </body>
 
 </html>

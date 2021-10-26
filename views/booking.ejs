@@ -6,6 +6,7 @@
         A Booking
     </title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
 </head>
 
 <body>
@@ -16,16 +17,18 @@
                     <%= booking.email %>,
                         <%= booking.payment %>
                             <button type="button" class="button is-danger"
-                                onclick="deleteBooking(booking.$loki)">Delete</button>
+                                onclick="deleteBooking('<%= booking.$loki %>')">Delete</button>
                             <script>
                                 async function deleteBooking(id) {
                                     //确认框，如果点ok则返回true，其他返回false
                                     var r = confirm("Confirm Delete?");
 
                                     if (r) {
-                                        //await只能在异步中使用，声明会等方法执行完之后再继续执行下去
+                                        //await只能在异步中使用，声明会等方法执行完之后再继续执行下去，返回promise处理结果
+                                        //fetch发起资源获取请求，返回promise
                                         var response = await fetch("/bookings/delete/" + id, {
-                                            method: "POST"
+                                            //method: "POST"
+                                            method : "DELETE"
                                         });
                                         //如果ok值为true则表示该部分执行无误
                                         if (response.ok) {
