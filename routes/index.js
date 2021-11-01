@@ -148,7 +148,6 @@ router.get('/bookings/search', function (req, res) {
 
   //find方法查找所有符合条件的数据集并全部返回
   let results = db.getCollection("bookings").find(whereClause);
-
   return res.render('bookings', { bookings: results });
 
 });
