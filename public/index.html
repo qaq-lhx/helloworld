@@ -23,7 +23,8 @@
             <div class="columns">
                 <!-- 将表单数据提交到目标主机的form目录下 -->
                 <!-- 表单提交时onsubmit方法会执行，return false取消默认表单提交方式 -->
-                <form class="column is-one-third" action="/bookings" method="POST" onsubmit="postData(this);return false">
+                <form class="column is-one-third" action="/bookings" method="POST"
+                    onsubmit="postData(this);return false">
                     <!-- 创建一个表单，一个占三分之一列空间， action将表单数据提交给链接 -->
                     <!-- method设置提交数据方式，get直接把参数附在URL里面，post把参数放在请求报文中 -->
                     <!-- input fields通过name属性识别元素，name在input中设置 -->
@@ -64,7 +65,8 @@
                     <div class="field">
                         <label class="label">Email</label>
                         <div class="control has-icons-left has-icons-right">
-                            <input class="input is-danger" type="email" placeholder="Email input" value="hello@" name="email">
+                            <input class="input is-danger" type="email" placeholder="Email input" value="hello@"
+                                name="email">
                             <span class="icon is-small is-left">
                                 <i class="fas fa-envelope"></i>
                             </span>
@@ -214,35 +216,37 @@
     </script>
 
     <script>
+        //方法的参数elem即form表单，包括表单结构和里面得到数据
+        //async声明这是一个异步方法
         async function postData(elem) {
-    
-        //   var response = await fetch('https://httpbin.org/post', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/x-www-form-urlencoded',
-        //     },
-        //     body: "foo=bar&lorem=ipsum"
-        //   });
+            //fetch方法通过elem.action获得form表单的数据提交地址，将访问请求提交到这个地址
+            //fetch后面{}内的参数表示访问后台的访问方式和访问报文的头部、body内容
+            //await声明表示必须要等待fetch方法执行完毕，才能执行接下来的语句
+            var response = await fetch(elem.action, {
+                //elem.methodd获得form表单的method即数据传送方式
+                method: elem.method,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                //表示将form表单里面填写的内容塞到body里面，和报文一起传给后台
+                body: new URLSearchParams(new FormData(elem))
+            });
 
-        var response = await fetch(elem.action, {
-    method: elem.method,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams(new FormData(elem))
-  });
-    
-          //在客户端控制台展示
-          console.log(response);
-    
-          if (response.ok) {
-            var data = await response.json();
-            alert(JSON.stringify(data));
-          } else {
-            alert(response.status + " " + response.statusCode);
-          }
+            //在客户端控制台展示
+            console.log(response);
+
+            //response是fetch获得的后台传回来的响应结果，里面的ok属性如果是true表示访问程序运行正常，false则表示发生错误
+            if (response.ok) {
+                //response.json（）将后台回传的数据从json格式转为正常格式，这样里面的数据就可以使用了
+                var data = await response.json();
+                //JSON.stringify(data)表示把里面的数据data转成字符串
+                alert(JSON.stringify(data));
+            } else {
+                //status表示状态码，如404表示找不到页面，statusCode表示该错误的具体内容
+                alert(response.status + " " + response.statusCode);
+            }
         }
-      </script>
+    </script>
 </body>
 
 </html>
