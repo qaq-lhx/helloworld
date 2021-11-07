@@ -13,13 +13,7 @@
     <section class="section">
         <div class="container">
 
-            <table class="table is-bordered is-striped is-hoverable is-fullwidth">
-
-                <% bookings.forEach( function(booking) { %>
-                    <tr><td><%= booking.name %></td><td><%= booking.number_of_tickets %></td></tr>
-                <% }); %>
-
-            </table>
+            <table class="table is-bordered is-striped is-hoverable is-fullwidth" id="bookingsTable"></table>
 
             <nav class="pagination" role="navigation" aria-label="pagination">
                 <a class="pagination-previous" id="previousButton">Previous</a>
@@ -51,7 +45,7 @@
         </div>
     </section>
 
-    
+
 
     <script>
         var previousButton = document.getElementById("previousButton");
@@ -61,49 +55,69 @@
         var nextLink = document.getElementById("nextLink");
         var firstLink = document.getElementById("firstLink");
         var lastLink = document.getElementById("lastLink");
-    
+
         var numOfRecords = parseInt("<%= numOfRecords %>");
-    
-        const urlParams = new URLSearchParams(window.location.search);
-        //urlparams.limit 访问的是limit这个类，get获取limit的值
-        var limit = Math.max(parseInt(urlParams.get("limit")), 2) || 2;
-        var offset = Math.max(parseInt(urlParams.get("offset")), 0) || 0;
-    
+
+
         function buildLinks() {
-    
-            var baseUrl = "/bookings/paginate?limit=" + limit + "&offset=";
-    
-            firstLink.href = baseUrl + 0;
-            previousButton.href = baseUrl + (offset - limit);
-            previousLink.href = baseUrl + (offset - limit);
-            currentLink.href = baseUrl + offset;
-            nextLink.href = baseUrl + (offset + limit);
-            nextButton.href = baseUrl + (offset + limit);
-            
-            lastLink.href = baseUrl + (Math.ceil(numOfRecords / limit) - 1) * limit;
-    
+            firstLink.onclick = function () { fetchData(limit, 0) };
+            previousButton.onclick = function () { fetchData(limit, offset - limit) };
+            previousLink.onclick = function () { fetchData(limit, offset - limit) };
+            currentLink.onclick = function () { fetchData(limit, offset) };
+            nextLink.onclick = function () { fetchData(limit, offset + limit) };
+            nextButton.onclick = function () { fetchData(limit, offset + limit) };
+            //Math.ceil方法向上取整
+            lastLink.onclick = function () { fetchData(limit, (Math.ceil(numOfRecords / limit) - 1) * limit) };
+
             var currentPageNumber = Math.floor(offset / limit) + 1;
-    
+
             previousLink.innerHTML = currentPageNumber - 1;
             currentLink.innerHTML = currentPageNumber;
             nextLink.innerHTML = currentPageNumber + 1;
             lastLink.innerHTML = Math.ceil(numOfRecords / limit);
-    
+
             if (offset < limit) {
                 previousButton.setAttribute("disabled", true);
-                previousButton.href = "";
+                previousButton.removeAttribute("onclick");
                 previousLink.style.display = "none";
+            } else {
+                previousButton.removeAttribute("disabled");
+                previousLink.style.display = "block";
             }
-    
+
             if (offset + limit >= numOfRecords) {
                 nextButton.setAttribute("disabled", true);
-                nextButton.href = "";
+                nextButton.removeAttribute("onclick");
                 nextLink.style.display = "none";
+            } else {
+                nextButton.removeAttribute("disabled");
+                nextLink.style.display = "block";
             }
         }
-    
-        buildLinks();
-    
+
+
+        async function fetchData(limit, offset) {
+
+            var response = await fetch('/bookings/aginate?limit=' + limit + '&offset=' + offset);
+
+            if (response.ok) {
+                var bookings = await response.json();
+
+                var temp = "";
+                bookings.forEach(function (booking) {
+                    temp += "<tr><td>" + booking.name + "</td><td>" + booking.numTickets + "</td></tr>"
+                });
+
+                document.getElementById("bookingsTable").innerHTML = temp;
+                buildLinks(limit, offset);
+
+            } else {
+                document.getElementById("bookingsTable").innerHTML = "<tr><td>" + response.statusText + "</td></tr>";
+            }
+        }
+
+        fetchData(2, 0);
+
     </script>
 
 </body>
