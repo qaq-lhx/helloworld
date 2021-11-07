@@ -37,6 +37,7 @@ router.get('/', function (req, res, next) {
 //   var response = {
 //     header: req.headers,
 //     body: req.body
+
 //   };
 
 //   res.json(response);
@@ -44,7 +45,6 @@ router.get('/', function (req, res, next) {
 
 /* Handle the Form submission with Restful Api */
 router.post('/bookings', function (req, res) {
-
   req.body.numTickets = parseInt(req.body.numTickets);
 
   let result = db.getCollection("bookings").insert(req.body);
@@ -154,16 +154,32 @@ router.get('/bookings/search', function (req, res) {
 
 /* Pagination */
 router.get('/bookings/paginate', function (req, res) {
+  // ||可以防止无参数值导致错误
+   var count = Math.max(req.query.limit, 2) || 2;
+   var start = Math.max(req.query.offset, 0) || 0;
 
-  var count = Math.max(req.query.limit, 2) || 2;
-  var start = Math.max(req.query.offset, 0) || 0;
+   var results = db.getCollection("bookings").chain().find({}).offset(start).limit(count).data();
+   var totalNumRecords = db.getCollection("bookings").count();
+   return res.render('paginate', { bookings: results, numOfRecords: totalNumRecords });
+});
 
-  var results = db.getCollection("bookings").chain().find({}).offset(start).limit(count).data();
+/* Ajax Pagination */
+router.get('/bookings/aginate', function (req, res) {
+  if (req.get('Accept').indexOf('html') === -1) {
 
-  var totalNumRecords = db.getCollection("bookings").count();
+    var count = Math.max(req.query.limit, 2) || 2;
+    var start = Math.max(req.query.offset, 0) || 0;
 
-  return res.render('paginate', { bookings: results, numOfRecords: totalNumRecords });
+    var results = db.getCollection("bookings").chain().find({}).offset(start).limit(count).data();
 
+    return res.json(results);
+
+} else {
+
+    var totalNumRecords = db.getCollection("bookings").count();
+
+    return res.render('aginate', { numOfRecords: totalNumRecords });
+}
 });
 
 //通过路由器导出模块
