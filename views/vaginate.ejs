@@ -1,0 +1,137 @@
+<!--paginate.ejs-->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+</head>
+
+<body>
+    <section class="section">
+        <div class="container" id="app">
+            <!-- the table element-->
+            <!-- the nav element-->
+
+            <div class="card" v-for="booking in bookings">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        {{booking.name}}
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        {{booking.number_of_tickets}}
+                    </div>
+                </div>
+            </div>
+            <br>
+
+            <nav class="pagination" role="navigation" aria-label="pagination">
+                <!-- v-on通过方法名调用实例方法 -->
+                <!-- v-on:click可以简写@click -->
+                <!-- button才能disable -->
+                <button class="pagination-previous" v-bind:disabled="isFirstPage"
+                    v-on:click="fetchData(limit, offset - limit)">Previous</button>
+                <!-- v-bind用来绑定指向的属性，动态赋值     v-bind:disabled可以简写成：disabled 
+                    https://vuejs.org/v2/guide/class-and-style.html-->
+                <button class="pagination-next" :disabled="isLastPage"
+                    v-on:click="fetchData(limit, offset + limit)">Next page</button>
+                <ul class="pagination-list">
+                    <li>
+                        <a class="pagination-link" @click="fetchData(limit, 0)">1</a>
+                    </li>
+                    <li>
+                        <span class="pagination-ellipsis">&hellip;</span>
+                    </li>
+                    <li>
+                        <!-- v-if中判断结果为false则该项标签不进行渲染，即不显示 -->
+                        <a class="pagination-link" v-if="!isFirstPage"
+                            @click="fetchData(limit, offset - limit)">{{currentPageNumber -
+                            1}}</a>
+                    </li>
+                    <li>
+                        <a class="pagination-link is-current"
+                            @click="fetchData(limit, offset)">{{currentPageNumber}}</a>
+                    </li>
+                    <li>
+                        <a class="pagination-link" v-if="!isLastPage"
+                            v-on:click="fetchData(limit, offset + limit)">{{currentPageNumber + 1}}</a>
+                    </li>
+                    <li>
+                        <span class="pagination-ellipsis">&hellip;</span>
+                    </li>
+                    <li>
+                        <a class="pagination-link"
+                            @click="fetchData(limit, (Math.ceil(numOfRecords / limit) - 1) * limit)">{{Math.ceil(numOfRecords
+                            / limit)}}</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="columns">
+                <!-- v-model进行双向绑定 -->
+                <b-input class="column" v-model="limit"></b-input>
+                <div class="column">
+                    <button class="button is-warning" @click="fetchData(limit, 0)">GO!</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/vue"></script>
+    <!-- Full bundle -->
+    <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+
+    <!-- Individual components -->
+    <script src="https://unpkg.com/buefy/dist/components/table"></script>
+    <script src="https://unpkg.com/buefy/dist/components/input"></script>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                numOfRecords: parseInt("<%= numOfRecords %>"),
+                bookings: [],
+                currentPageNumber: 1,
+                limit: 2,
+                offset: 0,
+            },
+            //初始化
+            mounted: function () {
+                this.fetchData(this.limit, this.offset);
+            },
+            //放computed里面的会实时监听，当其中元素改变时马上更新
+            computed: {
+                isFirstPage: function () { return (this.offset < this.limit) },
+                isLastPage: function () { return (this.offset + this.limit >= this.numOfRecords) },
+            },
+            methods: {
+                fetchData: async function (limit, offset) {
+
+                    var response = await fetch("/bookings/vaginate?limit=" + limit + "&offset=" + offset);
+
+                    if (response.ok) {
+                        var bookings = await response.json();
+                        this.bookings = bookings;
+                        //避免输入奇怪的值
+                        this.limit = Math.max(limit, 2) || 2;
+                        this.offset = offset;
+
+                        this.currentPageNumber = Math.floor(offset / limit) + 1;
+                        // `this` inside methods points to the Vue instance
+
+                    } else {
+                        alert(response.statusText);
+                    }
+                },
+            },
+        });
+
+
+    </script>
+
+</body>
+
+</html>

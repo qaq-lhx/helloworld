@@ -48,6 +48,8 @@
 
 
     <script>
+        fetchData(2, 0);
+
         var previousButton = document.getElementById("previousButton");
         var nextButton = document.getElementById("nextButton");
         var currentLink = document.getElementById("currentLink");
@@ -59,7 +61,7 @@
         var numOfRecords = parseInt("<%= numOfRecords %>");
 
 
-        function buildLinks() {
+        function buildLinks(limit,offset) {
             firstLink.onclick = function () { fetchData(limit, 0) };
             previousButton.onclick = function () { fetchData(limit, offset - limit) };
             previousLink.onclick = function () { fetchData(limit, offset - limit) };
@@ -105,7 +107,7 @@
 
                 var temp = "";
                 bookings.forEach(function (booking) {
-                    temp += "<tr><td>" + booking.name + "</td><td>" + booking.numTickets + "</td></tr>"
+                    temp += "<tr><td>" + booking.name + "</td><td>" + booking.number_of_tickets + "</td></tr>"
                 });
 
                 document.getElementById("bookingsTable").innerHTML = temp;
@@ -116,7 +118,7 @@
             }
         }
 
-        fetchData(2, 0);
+        
 
     </script>
 
