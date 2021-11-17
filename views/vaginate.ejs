@@ -71,7 +71,7 @@
                 </ul>
             </nav>
             <div class="columns">
-                <!-- v-model进行双向绑定 -->
+                <!-- v-model进行双向绑定，input的值和limit的参数值有一个变动，另一个同步update -->
                 <b-input class="column" v-model="limit"></b-input>
                 <div class="column">
                     <button class="button is-warning" @click="fetchData(limit, 0)">GO!</button>
